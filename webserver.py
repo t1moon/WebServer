@@ -20,7 +20,7 @@ class WebServer:
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind(self.address)
         self.server_socket.listen(self.listeners)
-        for i in range(self.ncpu + 1):
+        for i in range(self.ncpu):
             pid = os.fork()
 
             if pid != 0:
@@ -34,9 +34,10 @@ class WebServer:
                         client_socket.close()
                         continue
 
-                    response = self.handler.get_response(request)
+                    handler = self.handler(request, self.root_dir)
+                    response = handler.handle_request()
 
-                    client_socket.sendall(response)
+                    client_socket.sendall(response.build())
                     client_socket.close()
 
         self.server_socket.close()

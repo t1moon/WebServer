@@ -1,21 +1,25 @@
 import argparse
+import os
+
 from webserver import WebServer
 
 HOST = '127.0.0.1'
 PORT = 80
-NCPU = 2
+NCPU = os.cpu_count()
 BUFF = 1024
-LISTENERS = 5
+LISTENERS = 1000
+ROOT_DIR = "/home/timur/"
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='server')
     parser.add_argument('-r', type=str, help='root directory')
-    parser.add_argument('-c', type=str, help='number of CPU')
+    parser.add_argument('-c', type=int, help='number of CPU')
     args = vars(parser.parse_args())
 
-    NCPU = args['c'] or NCPU
-    ROOT_DIR = args['r'] or ""
-    ADDRESS = (HOST, PORT)
+    ncpu = args['c'] or NCPU
+    root_dir = args['r'] or ROOT_DIR
+    address = (HOST, PORT)
 
-    webserver = WebServer(ROOT_DIR, NCPU, ADDRESS, LISTENERS, BUFF)
+    webserver = WebServer(root_dir, ncpu, address, LISTENERS, BUFF)
     webserver.start()
